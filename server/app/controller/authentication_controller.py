@@ -4,7 +4,7 @@ from app.schema.authentication_schema import LoginUser
 
 router = APIRouter()
 
-router.post("/login", status_code=201)
+@router.post("/login", status_code=201)
 async def login(user: LoginUser, response: Response):
     result = AuthenticationService.login(user.email, user.password)
     if result:
