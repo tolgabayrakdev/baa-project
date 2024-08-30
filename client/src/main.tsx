@@ -4,11 +4,14 @@ import './index.css'
 import { RouterProvider } from 'react-router-dom'
 import routes from './routes.tsx'
 import { ChakraProvider } from '@chakra-ui/react'
+import { HelmetProvider } from 'react-helmet-async'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ChakraProvider>
-      <RouterProvider router={routes} />
+      <HelmetProvider>
+        <RouterProvider router={routes} />
+      </HelmetProvider>
     </ChakraProvider>
   </StrictMode>,
 )
