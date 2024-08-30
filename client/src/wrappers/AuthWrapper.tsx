@@ -39,7 +39,7 @@ function AuthWrapper(WrappedComponent: any) {
         } else if (accessDenied) {
             setLoading(true);
             setTimeout(() => {
-                navigate('/login');
+                navigate('/authentication');
             }, 1000);
         }
         return <WrappedComponent loggedIn={loogedIn} {...props} />;
