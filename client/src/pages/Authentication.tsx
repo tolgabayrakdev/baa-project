@@ -14,16 +14,18 @@ import {
     TabPanel,
     TabPanels,
     Tabs,
-    FormErrorMessage
+    FormErrorMessage,
+    useToast
 } from "@chakra-ui/react";
 import { Formik, Field, Form } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
-import * as Yup from "yup"; 
+import * as Yup from "yup";
 
 export default function Authentication() {
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
@@ -37,9 +39,45 @@ export default function Authentication() {
     // SignInRequest
     const submitSignIn = async (values: { email: string, password: string }) => {
         try {
-            console.log("SignIn Values:", values);
-            // Add your login logic here
+            const res = await fetch("http://localhost:8000/api/v1/authentication/login", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: values.email,
+                    password: values.password
+                })
+            });
+            if (res.status === 200) {
+                toast({
+                    title: 'Login successful',
+                    description: "Going to Baord page...",
+                    status: 'success',
+                    duration: 1000,
+                    isClosable: true,
+                })
+                setTimeout(() => {
+                    navigate("/board");
+                }, 1000)
+            } else {
+                toast({
+                    title: 'Login failed',
+                    description: "Check your credentials!",
+                    status: 'warning',
+                    duration: 1000,
+                    isClosable: true,
+                })
+            }
         } catch (error) {
+            toast({
+                title: 'Error',
+                description: "Something gone wrong!",
+                status: 'error',
+                duration: 1000,
+                isClosable: true,
+            })
             console.log(error);
         }
     };
@@ -54,6 +92,19 @@ export default function Authentication() {
         }
     };
 
+    useEffect(() => {
+        const checkLoggedIn = async () => {
+            const res = await fetch('http://localhost:8000/api/v1/authentication/verify', {
+                method: 'POST',
+                credentials: 'include',
+            });
+            if (res.status === 200) {
+                navigate('/board')
+            }
+        }
+        checkLoggedIn();
+    }, [])
+
     return (
         <>
             <Helmet>
@@ -61,7 +112,7 @@ export default function Authentication() {
             </Helmet>
 
             <Container maxW="lg" py={{ base: "12", md: "24" }} px={{ base: "0", sm: "8" }}>
-                <Heading as="h1" size="xs" mb="12">
+                <Heading color="#5e5d5c" as="h1" size="xs" mb="12">
                     You can create an account or log in to your existing account here.
                 </Heading>
                 <Tabs colorScheme="green" isFitted variant="enclosed">
@@ -107,7 +158,7 @@ export default function Authentication() {
                                                 </FormControl>
                                             </Stack>
                                             <HStack justify="space-between">
-                                                <Button onClick={()=> navigate("/reset-password")} variant="text" size="sm">
+                                                <Button onClick={() => navigate("/reset-password")} variant="text" size="sm">
                                                     Forgot password?
                                                 </Button>
                                             </HStack>
@@ -134,8 +185,8 @@ export default function Authentication() {
                                         <Stack spacing="6">
                                             <Stack spacing="5">
                                                 <FormControl isInvalid={!!errors.email && touched.email}>
-                                                    <FormLabel htmlFor="email">Email</FormLabel>
-                                                    <Field as={Input} id="email" name="email" type="email" placeholder="example@example.com" />
+                                                    <FormLabel htmlFor="remail">Email</FormLabel>
+                                                    <Field as={Input} id="remail" name="remail" type="remail" placeholder="example@example.com" />
                                                     <FormErrorMessage>{errors.email}</FormErrorMessage>
                                                 </FormControl>
                                                 <FormControl isInvalid={!!errors.password && touched.password}>
@@ -143,8 +194,8 @@ export default function Authentication() {
                                                     <InputGroup size="md">
                                                         <Field
                                                             as={Input}
-                                                            id="password"
-                                                            name="password"
+                                                            id="fpassword"
+                                                            name="rpassword"
                                                             pr="4.5rem"
                                                             type={show ? "text" : "password"}
                                                             placeholder="Enter password"
@@ -158,7 +209,6 @@ export default function Authentication() {
                                                     <FormErrorMessage>{errors.password}</FormErrorMessage>
                                                 </FormControl>
                                             </Stack>
-
                                             <Stack spacing="6">
                                                 <Button colorScheme="green" type="submit" isLoading={isSubmitting}>
                                                     Sign up

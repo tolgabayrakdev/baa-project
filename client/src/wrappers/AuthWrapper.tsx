@@ -4,7 +4,7 @@ import Loading from '../components/Loading';
 
 function AuthWrapper(WrappedComponent: any) {
     const Wrapper = (props: any) => {
-        const [loogedIn, setLoggedIn] = useState(false);
+        const [loggedIn, setLoggedIn] = useState(false);
         const [loading, setLoading] = useState(true);
         const [accessDenied, setAccessDenied] = useState(false);
         const navigate = useNavigate();
@@ -12,7 +12,7 @@ function AuthWrapper(WrappedComponent: any) {
         useEffect(() => {
             const verifyAuthToken = async () => {
                 try {
-                    const res = await fetch('http://localhost:1234/api/v1/auth/verify', {
+                    const res = await fetch('http://localhost:8000/api/v1/authentication/verify', {
                         method: 'POST',
                         credentials: 'include',
                     });
@@ -42,7 +42,7 @@ function AuthWrapper(WrappedComponent: any) {
                 navigate('/authentication');
             }, 1000);
         }
-        return <WrappedComponent loggedIn={loogedIn} {...props} />;
+        return <WrappedComponent loggedIn={loggedIn} {...props} />;
     };
     return Wrapper;
 }

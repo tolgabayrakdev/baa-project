@@ -10,6 +10,7 @@ export default function Index({ }: Props) {
           Baa - Board Page
         </title>
       </Helmet>
+      <h3> Welcome the private page</h3>
     </div>
   )
 }
