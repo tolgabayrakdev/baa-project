@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 export default function NotFound() {
     return (
         <>
-        <Helmet>
+            <Helmet>
                 <title>
                     Baa - 404 Not Found!
                 </title>

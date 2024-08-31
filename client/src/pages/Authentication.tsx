@@ -19,9 +19,12 @@ import {
 import { Formik, Field, Form } from "formik";
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup"; 
 
 export default function Authentication() {
+    const navigate = useNavigate();
+
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
 
@@ -104,7 +107,7 @@ export default function Authentication() {
                                                 </FormControl>
                                             </Stack>
                                             <HStack justify="space-between">
-                                                <Button variant="text" size="sm">
+                                                <Button onClick={()=> navigate("/reset-password")} variant="text" size="sm">
                                                     Forgot password?
                                                 </Button>
                                             </HStack>
