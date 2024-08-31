@@ -31,7 +31,7 @@ class AuthenticationService:
             return {"access_token": access_token, "refresh_token": refresh_token}
         except HTTPException as http_exc:
             raise http_exc
-        except Exception:
+        except SQLAlchemyError:
             raise HTTPException(status_code=500, detail="An unexpected server error occurred.")
         finally:
             db.close()
@@ -43,7 +43,6 @@ class AuthenticationService:
             existing_user = db.query(User).filter_by(email=payload.email).first()
             if existing_user:
                 raise HTTPException(status_code=400, detail="Email already registered!")
-
             user = User(
                 email=payload.email,
                 password=helper.generate_hash_password(payload.password)
