@@ -11,7 +11,6 @@ helper = Helper()
 @router.post("/login")
 async def login(user: LoginUser, response: Response):
         result = AuthenticationService.login(email=user.email, password=user.password)
-
         response.set_cookie(
             key="access_token", value=result["access_token"], httponly=True
         )
