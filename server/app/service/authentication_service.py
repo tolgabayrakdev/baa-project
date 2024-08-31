@@ -9,6 +9,15 @@ helper = Helper()
 
 class AuthenticationService:
 
+    @staticmethod
+    def verify_user(id: int):
+        db = SessionLocal()
+        user = db.query(User).filter_by(id=id).first()
+        if user:
+            return user
+        else:
+            return False
+
 
     @staticmethod
     def login(email: str, password: str) -> dict[str, str]:
@@ -40,9 +49,12 @@ class AuthenticationService:
             db.add(user)
             db.commit()
             db.refresh(user)
-            return user
+
+            return {"message": "Account created."}
         except SQLAlchemyError:
             db.rollback()
             raise HTTPException(status_code=500, detail="An unexpected server error occurred.")
         finally:
             db.close()
+
+

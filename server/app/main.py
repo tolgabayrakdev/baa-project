@@ -18,12 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(router=authentication_controller.router, prefix="/api/v1/authentication")
-
-
-
-
 
 
 @app.get("/")

@@ -30,3 +30,9 @@ class Helper:
     @classmethod
     def generate_refresh_token(cls, payload: dict) -> str:
         return jwt.encode({"payload": payload}, "secret_key", algorithm="HS256")
+
+    @classmethod
+    def decode_jwt(cls, token: str):
+        decoded_token = jwt.decode(token, "secret_key", algorithms=["HS256"])
+        id = decoded_token["payload"]["user_id"]
+        return id
