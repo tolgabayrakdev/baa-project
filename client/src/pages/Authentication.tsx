@@ -31,11 +31,15 @@ export default function Authentication() {
     const handleClick = () => setShow(!show);
 
     // Validation schema for Formik
-    const validationSchema = Yup.object({
+    const validationSchemaLogin = Yup.object({
         email: Yup.string().email("Invalid email address").required("Required"),
         password: Yup.string().min(6, "Password must be at least 6 characters").required("Required"),
     });
-
+    
+    const validationSchemaRegister = Yup.object({
+        remail: Yup.string().email("Invalid email address").required("Required"),
+        rpassword: Yup.string().min(6, "Password must be at least 6 characters").required("Required"),
+    });
     // SignInRequest
     const submitSignIn = async (values: { email: string, password: string }) => {
         try {
@@ -83,11 +87,48 @@ export default function Authentication() {
     };
 
     // SignUpRequest
-    const submitSignUp = async (values: { email: string, password: string }) => {
+    const submitSignUp = async (values: { remail: string, rpassword: string }) => {
+        console.log("register");
         try {
-            console.log("SignUp Values:", values);
-            // Add your registration logic here
+            const res = await fetch("http://localhost:8000/api/v1/authentication/register", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: values.remail,
+                    password: values.rpassword
+                })
+            });
+            if (res.status === 201) {
+                toast({
+                    title: 'Account created',
+                    description: "You can login",
+                    status: 'success',
+                    duration: 1000,
+                    isClosable: true,
+                })
+                setTimeout(() => {
+                    navigate(0);
+                }, 1000)
+            } else if (res.status === 400) {
+                toast({
+                    title: 'Account creation failed!',
+                    description: "Email already registered!",
+                    status: 'warning',
+                    duration: 1000,
+                    isClosable: true,
+                })
+            }
         } catch (error) {
+            toast({
+                title: 'Error',
+                description: "Something gone wrong!",
+                status: 'error',
+                duration: 1000,
+                isClosable: true,
+            })
             console.log(error);
         }
     };
@@ -125,7 +166,7 @@ export default function Authentication() {
                         <TabPanel mt="6">
                             <Formik
                                 initialValues={{ email: "", password: "" }}
-                                validationSchema={validationSchema}
+                                validationSchema={validationSchemaLogin}
                                 onSubmit={submitSignIn}
                             >
                                 {({ errors, touched, isSubmitting }) => (
@@ -176,20 +217,20 @@ export default function Authentication() {
                         {/* Register Form */}
                         <TabPanel mt="6">
                             <Formik
-                                initialValues={{ email: "", password: "" }}
-                                validationSchema={validationSchema}
+                                initialValues={{ remail: "", rpassword: "" }}
+                                validationSchema={validationSchemaRegister}
                                 onSubmit={submitSignUp}
                             >
                                 {({ errors, touched, isSubmitting }) => (
                                     <Form>
                                         <Stack spacing="6">
                                             <Stack spacing="5">
-                                                <FormControl isInvalid={!!errors.email && touched.email}>
+                                                <FormControl isInvalid={!!errors.remail && touched.remail}>
                                                     <FormLabel htmlFor="remail">Email</FormLabel>
                                                     <Field as={Input} id="remail" name="remail" type="remail" placeholder="example@example.com" />
-                                                    <FormErrorMessage>{errors.email}</FormErrorMessage>
+                                                    <FormErrorMessage>{errors.remail}</FormErrorMessage>
                                                 </FormControl>
-                                                <FormControl isInvalid={!!errors.password && touched.password}>
+                                                <FormControl isInvalid={!!errors.rpassword && touched.rpassword}>
                                                     <FormLabel htmlFor="password">Password</FormLabel>
                                                     <InputGroup size="md">
                                                         <Field
@@ -206,7 +247,7 @@ export default function Authentication() {
                                                             </Button>
                                                         </InputRightElement>
                                                     </InputGroup>
-                                                    <FormErrorMessage>{errors.password}</FormErrorMessage>
+                                                    <FormErrorMessage>{errors.rpassword}</FormErrorMessage>
                                                 </FormControl>
                                             </Stack>
                                             <Stack spacing="6">
